@@ -1,123 +1,330 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Our Memory Book</title>
-  <style>
-    body {
-      font-family: 'Georgia', serif;
-      background: linear-gradient(to bottom, #fff5f9 0%, #ffe6f2 100%);
-      color: #333;
-      max-width: 700px;
-      margin: auto;
-      padding: 20px;
-    }
-    h1, h2 {
-      text-align: center;
-      color: #c72c48;
-    }
-    #countdown { text-align: center; font-size: 20px; color: #a8325e; margin-bottom: 20px; }
-    input, textarea, select {
-      width: 100%; padding: 12px; margin: 10px 0;
-      box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    button {
-      width: 100%; padding: 14px; font-size: 18px;
-      background: #c72c48; color: white; border: none;
-      border-radius: 6px; cursor: pointer;
-    }
-    button:hover { background: #9e1e3a; }
-    .entry { background: #ffffffcc; padding: 12px; margin-top: 15px;
-             border-radius: 8px; border: 1px solid #ddd; }
-    .entry.me { background: #ffe6e9; }
-    .entry.her { background: #e6faf4; }
-    .timestamp { font-size: 12px; color: #666; text-align: right; }
-    #diary { display: none; }
-    #wrong { color: red; text-align: center; display: none; }
-    .heart { color: #c72c48; font-size: 24px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Our Romantic Memory Book</title>
+<style>
+  body {
+    margin: 0; padding: 20px;
+    font-family: 'Georgia', serif;
+    background: #fce4ec;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+  }
+  #container {
+    perspective: 1500px;
+    width: 700px; height: 500px;
+    position: relative;
+  }
+  #passwordSection {
+    max-width: 400px;
+    margin: auto;
+    text-align: center;
+  }
+  #passwordSection input[type="password"] {
+    padding: 10px;
+    font-size: 18px;
+    width: 80%;
+    border-radius: 8px;
+    border: 1px solid #c72c48;
+    margin-bottom: 10px;
+  }
+  #passwordSection button {
+    padding: 10px 20px;
+    font-size: 18px;
+    background: #c72c48;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  #passwordSection button:hover {
+    background: #9e1e3a;
+  }
+  #wrongPassword {
+    color: red;
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* Book styles */
+  #book {
+    width: 700px;
+    height: 500px;
+    background: linear-gradient(145deg, #ffe6f0 0%, #ffccdb 100%);
+    box-shadow: 0 15px 30px rgba(199,44,72,0.3);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    display: none;
+  }
+
+  .page {
+    position: absolute;
+    width: 350px; /* half of book width */
+    height: 100%;
+    background: white;
+    border-radius: 0 20px 20px 0;
+    box-shadow: inset 0 0 15px #ffbfd4;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  .page.left {
+    left: 0;
+    border-radius: 20px 0 0 20px;
+    box-shadow: inset 0 0 15px #ffd9e2;
+  }
+
+  .page.right {
+    right: 0;
+  }
+
+  .page h2 {
+    text-align: center;
+    color: #c72c48;
+    margin-top: 0;
+  }
+
+  .entry {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+  .entry.me {
+    background: #ffe6e9;
+    border: 1px solid #d85a71;
+  }
+  .entry.her {
+    background: #e6faf4;
+    border: 1px solid #55bca3;
+  }
+
+  .timestamp {
+    font-size: 12px;
+    color: #999;
+    text-align: right;
+  }
+
+  /* Page Flip Buttons */
+  #controls {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+  }
+  #controls button {
+    background: #c72c48;
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    margin: 0 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+  #controls button:disabled {
+    background: #f5a6b8;
+    cursor: default;
+  }
+  #controls button:hover:not(:disabled) {
+    background: #9e1e3a;
+  }
+
+  /* Add entry form */
+  #addEntry {
+    position: absolute;
+    bottom: 70px;
+    width: 660px;
+    left: 20px;
+    background: #ffe6f0;
+    border-radius: 15px;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  #addEntry select, #addEntry textarea {
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #c72c48;
+  }
+  #addEntry select {
+    width: 100px;
+    padding: 8px;
+  }
+  #addEntry textarea {
+    flex-grow: 1;
+    height: 50px;
+    padding: 8px;
+    resize: none;
+  }
+  #addEntry button {
+    width: 120px;
+    padding: 10px;
+  }
+
+  /* Scrollbar styling */
+  .page::-webkit-scrollbar {
+    width: 8px;
+  }
+  .page::-webkit-scrollbar-thumb {
+    background: #c72c48;
+    border-radius: 4px;
+  }
+  .page::-webkit-scrollbar-track {
+    background: #ffe6f0;
+  }
+</style>
 </head>
 <body>
 
-  <h1>📖 Our Best Memories 📖</h1>
+<div id="passwordSection">
+  <h1>🔒 Enter Password to Open Memory Book</h1>
+  <input type="password" id="passwordInput" placeholder="Password" />
+  <br />
+  <button onclick="unlockBook()">Open Book</button>
+  <p id="wrongPassword">Incorrect password. Try again.</p>
+</div>
 
-  <!-- Password -->
-  <div id="pwdSection">
-    <p>Enter our secret password to open the book:</p>
-    <input type="password" id="pwd" placeholder="Password" />
-    <button onclick="unlock()">Open Memory Book</button>
-    <p id="wrong">Wrong password, try again 💔</p>
-  </div>
-
-  <!-- Main Book -->
-  <div id="diary">
-    <h2 class="heart">💕 Aastha & Me</h2>
-    <p style="text-align: center; font-style: italic;">
-      "Our journey began in <strong>September 2024</strong>—the moment I saw you, everything felt magical..."
-    </p>
-    <div class="entry her">
-      <strong>Aastha (First Meeting):</strong>
-      <p>I remember your smile the first time I met you—sunlight caught in your eyes…</p>
-      <div class="timestamp">September 2024</div>
+<div id="container">
+  <div id="book">
+    <div class="page left" id="leftPage">
+      <!-- Left page content -->
+    </div>
+    <div class="page right" id="rightPage">
+      <!-- Right page content -->
     </div>
 
-    <div style="margin-top: 20px;">
-      <label>Who’s writing?</label>
-      <select id="who">
+    <div id="addEntry">
+      <select id="authorSelect" aria-label="Select author">
         <option value="me">Me</option>
         <option value="her">Aastha</option>
       </select>
-
-      <textarea id="moment" placeholder="Write our next beautiful memory..."></textarea>
-      <button onclick="addMoment()">Add to Our Book</button>
+      <textarea id="entryText" placeholder="Write your memory here..." aria-label="Memory text"></textarea>
+      <button onclick="addMemory()">Add Memory</button>
     </div>
 
-    <h2>🌟 Our Favorite Moments</h2>
-    <div id="moments"></div>
+    <div id="controls">
+      <button onclick="prevPage()" id="prevBtn" disabled>← Previous</button>
+      <button onclick="nextPage()" id="nextBtn">Next →</button>
+    </div>
   </div>
+</div>
 
-  <script>
-    const PASSWORD = "aastha";
-    function unlock() {
-      if (document.getElementById("pwd").value === PASSWORD) {
-        document.getElementById("pwdSection").style.display = "none";
-        document.getElementById("diary").style.display = "block";
-        document.getElementById("wrong").style.display = "none";
-        loadMoments();
-      } else {
-        document.getElementById("wrong").style.display = "block";
-      }
+<script>
+  const PASSWORD = "aastha";
+  const memoriesPerPage = 4; // two pages, each page shows 2 memories
+  let memories = [];
+  let currentPageIndex = 0;
+
+  // The special first meeting memory always first
+  const firstMeeting = {
+    who: "her",
+    content: "I remember your smile the first time I met you in September 2024. Everything felt magical and new.",
+    timestamp: "September 2024",
+  };
+
+  function unlockBook() {
+    const input = document.getElementById("passwordInput").value;
+    const wrongMsg = document.getElementById("wrongPassword");
+    if(input === PASSWORD) {
+      document.getElementById("passwordSection").style.display = "none";
+      document.getElementById("book").style.display = "block";
+      wrongMsg.style.display = "none";
+
+      loadMemories();
+      currentPageIndex = 0;
+      showPage(currentPageIndex);
+    } else {
+      wrongMsg.style.display = "block";
+    }
+  }
+
+  function loadMemories() {
+    // Load memories from localStorage or start fresh with firstMeeting
+    memories = JSON.parse(localStorage.getItem("memoryBookMemories")) || [];
+    if(!memories.length){
+      memories = [firstMeeting];
+      localStorage.setItem("memoryBookMemories", JSON.stringify(memories));
+    }
+  }
+
+  function saveMemories() {
+    localStorage.setItem("memoryBookMemories", JSON.stringify(memories));
+  }
+
+  function addMemory() {
+    const author = document.getElementById("authorSelect").value;
+    const text = document.getElementById("entryText").value.trim();
+    if(text === "") {
+      alert("Please write a memory before adding!");
+      return;
+    }
+    const newMemory = {
+      who: author,
+      content: text,
+      timestamp: new Date().toLocaleString(),
+    };
+    memories.unshift(newMemory);
+    saveMemories();
+    document.getElementById("entryText").value = "";
+    currentPageIndex = 0;
+    showPage(currentPageIndex);
+  }
+
+  function showPage(pageIndex) {
+    const leftPage = document.getElementById("leftPage");
+    const rightPage = document.getElementById("rightPage");
+    leftPage.innerHTML = "";
+    rightPage.innerHTML = "";
+
+    // Calculate start index for this spread (2 memories per page side, total 4 memories per spread)
+    let startIndex = pageIndex * memoriesPerPage;
+
+    function createMemoryElement(memory) {
+      const div = document.createElement("div");
+      div.className = "entry " + (memory.who === "me" ? "me" : "her");
+      div.innerHTML = `
+        <p>${memory.content}</p>
+        <div class="timestamp">${memory.timestamp}</div>
+      `;
+      return div;
     }
 
-    function addMoment() {
-      const who = document.getElementById("who").value;
-      const text = document.getElementById("moment").value.trim();
-      if (!text) { alert("Share your moment 💖"); return; }
-      const entry = { who, content: text, time: new Date().toLocaleString() };
+    // Left page shows memories at startIndex and startIndex + 1
+    if(memories[startIndex]) leftPage.appendChild(createMemoryElement(memories[startIndex]));
+    if(memories[startIndex + 1]) leftPage.appendChild(createMemoryElement(memories[startIndex + 1]));
 
-      let arr = JSON.parse(localStorage.getItem("moments_book")) || [];
-      arr.unshift(entry);
-      localStorage.setItem("moments_book", JSON.stringify(arr));
-      document.getElementById("moment").value = "";
-      loadMoments();
-    }
+    // Right page shows memories at startIndex + 2 and startIndex + 3
+    if(memories[startIndex + 2]) rightPage.appendChild(createMemoryElement(memories[startIndex + 2]));
+    if(memories[startIndex + 3]) rightPage.appendChild(createMemoryElement(memories[startIndex + 3]));
 
-    function loadMoments() {
-      const container = document.getElementById("moments");
-      container.innerHTML = '';
-      const arr = JSON.parse(localStorage.getItem("moments_book")) || [];
-      arr.forEach(e => {
-        const d = document.createElement("div");
-        d.className = "entry " + (e.who === "me" ? "me" : "her");
-        d.innerHTML = `<strong>${e.who === "me" ? "Me" : "Aastha"}:</strong>
-                       <p>${e.content}</p>
-                       <div class="timestamp">${e.time}</div>`;
-        container.appendChild(d);
-      });
+    // Update button states
+    document.getElementById("prevBtn").disabled = pageIndex <= 0;
+    document.getElementById("nextBtn").disabled = (startIndex + memoriesPerPage) >= memories.length;
+  }
+
+  function nextPage() {
+    if ((currentPageIndex + 1) * memoriesPerPage < memories.length) {
+      currentPageIndex++;
+      showPage(currentPageIndex);
     }
-  </script>
+  }
+
+  function prevPage() {
+    if (currentPageIndex > 0) {
+      currentPageIndex--;
+      showPage(currentPageIndex);
+    }
+  }
+</script>
 
 </body>
 </html>
