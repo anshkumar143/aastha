@@ -1,327 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Our Romantic Memory Book</title>
-<style>
-  body {
-    margin: 0; padding: 20px;
-    font-family: 'Georgia', serif;
-    background: #fce4ec;
-    display: flex; justify-content: center; align-items: center;
-    min-height: 100vh;
-  }
-  #container {
-    perspective: 1500px;
-    width: 700px; height: 500px;
-    position: relative;
-  }
-  #passwordSection {
-    max-width: 400px;
-    margin: auto;
-    text-align: center;
-  }
-  #passwordSection input[type="password"] {
-    padding: 10px;
-    font-size: 18px;
-    width: 80%;
-    border-radius: 8px;
-    border: 1px solid #c72c48;
-    margin-bottom: 10px;
-  }
-  #passwordSection button {
-    padding: 10px 20px;
-    font-size: 18px;
-    background: #c72c48;
-    border: none;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  #passwordSection button:hover {
-    background: #9e1e3a;
-  }
-  #wrongPassword {
-    color: red;
-    margin-top: 10px;
-    display: none;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Our Romantic Book</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Georgia', serif;
+      background: #fff0f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .lock-screen {
+      text-align: center;
+    }
+    .lock-screen input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #c72c48;
+      margin-bottom: 10px;
+    }
+    .lock-screen button {
+      background: #c72c48;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
 
-  /* Book styles */
-  #book {
-    width: 700px;
-    height: 500px;
-    background: linear-gradient(145deg, #ffe6f0 0%, #ffccdb 100%);
-    box-shadow: 0 15px 30px rgba(199,44,72,0.3);
-    border-radius: 20px;
-    position: relative;
-    overflow: hidden;
-    display: none;
-  }
+    .book {
+      perspective: 2000px;
+      width: 90%;
+      max-width: 700px;
+      height: 500px;
+      position: relative;
+      display: none;
+    }
 
-  .page {
-    position: absolute;
-    width: 350px; /* half of book width */
-    height: 100%;
-    background: white;
-    border-radius: 0 20px 20px 0;
-    box-shadow: inset 0 0 15px #ffbfd4;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
-    font-size: 18px;
-    line-height: 1.5;
-  }
+    .page {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom right, #fff, #ffe6f0);
+      position: absolute;
+      border-radius: 10px;
+      padding: 30px;
+      box-sizing: border-box;
+      backface-visibility: hidden;
+      transition: transform 1s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      overflow-y: auto;
+    }
 
-  .page.left {
-    left: 0;
-    border-radius: 20px 0 0 20px;
-    box-shadow: inset 0 0 15px #ffd9e2;
-  }
+    .page h1 {
+      text-align: center;
+      color: #c72c48;
+    }
 
-  .page.right {
-    right: 0;
-  }
+    .page p {
+      font-size: 20px;
+      text-align: center;
+      color: #333;
+      line-height: 1.5;
+    }
 
-  .page h2 {
-    text-align: center;
-    color: #c72c48;
-    margin-top: 0;
-  }
+    .buttons {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+    }
 
-  .entry {
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 12px;
-  }
-  .entry.me {
-    background: #ffe6e9;
-    border: 1px solid #d85a71;
-  }
-  .entry.her {
-    background: #e6faf4;
-    border: 1px solid #55bca3;
-  }
+    .buttons button {
+      background: #c72c48;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
 
-  .timestamp {
-    font-size: 12px;
-    color: #999;
-    text-align: right;
-  }
+    #photoDisplay img {
+      max-width: 100%;
+      border: 3px solid #c72c48;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
 
-  /* Page Flip Buttons */
-  #controls {
-    position: absolute;
-    bottom: 20px;
-    width: 100%;
-    text-align: center;
-  }
-  #controls button {
-    background: #c72c48;
-    border: none;
-    color: white;
-    padding: 12px 25px;
-    margin: 0 10px;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    user-select: none;
-  }
-  #controls button:disabled {
-    background: #f5a6b8;
-    cursor: default;
-  }
-  #controls button:hover:not(:disabled) {
-    background: #9e1e3a;
-  }
+    .flipped {
+      transform: rotateY(-180deg);
+    }
 
-  /* Add entry form */
-  #addEntry {
-    position: absolute;
-    bottom: 70px;
-    width: 660px;
-    left: 20px;
-    background: #ffe6f0;
-    border-radius: 15px;
-    padding: 10px 15px;
-    box-sizing: border-box;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  #addEntry select, #addEntry textarea {
-    font-size: 16px;
-    border-radius: 8px;
-    border: 1px solid #c72c48;
-  }
-  #addEntry select {
-    width: 100px;
-    padding: 8px;
-  }
-  #addEntry textarea {
-    flex-grow: 1;
-    height: 50px;
-    padding: 8px;
-    resize: none;
-  }
-  #addEntry button {
-    width: 120px;
-    padding: 10px;
-  }
+    .page2, .page3 {
+      transform: rotateY(180deg);
+      z-index: 1;
+    }
 
-  /* Scrollbar styling */
-  .page::-webkit-scrollbar {
-    width: 8px;
-  }
-  .page::-webkit-scrollbar-thumb {
-    background: #c72c48;
-    border-radius: 4px;
-  }
-  .page::-webkit-scrollbar-track {
-    background: #ffe6f0;
-  }
-</style>
+    .page1 {
+      z-index: 2;
+    }
+
+  </style>
 </head>
 <body>
 
-<div id="passwordSection">
-  <h1>🔒 Enter Password to Open Memory Book</h1>
+<!-- Lock screen -->
+<div class="lock-screen" id="lockScreen">
+  <h2>🔒 Enter Password to Unlock Love Book</h2>
   <input type="password" id="passwordInput" placeholder="Password" />
-  <br />
-  <button onclick="unlockBook()">Open Book</button>
-  <p id="wrongPassword">Incorrect password. Try again.</p>
+  <br>
+  <button onclick="checkPassword()">Unlock</button>
+  <p id="wrong" style="color:red; display:none;">Wrong password. Try again 💔</p>
 </div>
 
-<div id="container">
-  <div id="book">
-    <div class="page left" id="leftPage">
-      <!-- Left page content -->
+<!-- Book container -->
+<div class="book" id="book">
+  <!-- Page 1 -->
+  <div class="page page1" id="page1">
+    <h1>💖 Welcome to Our Love Story 💖</h1>
+    <p>
+      From the first moment our eyes met, my world changed forever. Every smile, every word, every silence between us told its own story. This book holds pieces of my heart, moments shared, and love eternal. Welcome to the journey of us.
+    </p>
+    <div class="buttons">
+      <button onclick="flipPage(1)">Next →</button>
     </div>
-    <div class="page right" id="rightPage">
-      <!-- Right page content -->
-    </div>
+  </div>
 
-    <div id="addEntry">
-      <select id="authorSelect" aria-label="Select author">
-        <option value="me">Me</option>
-        <option value="her">Aastha</option>
-      </select>
-      <textarea id="entryText" placeholder="Write your memory here..." aria-label="Memory text"></textarea>
-      <button onclick="addMemory()">Add Memory</button>
+  <!-- Page 2 -->
+  <div class="page page2" id="page2">
+    <h1>📸 Add a Photo Memory</h1>
+    <p>Upload a photo that captures our moment together:</p>
+    <input type="file" id="photoInput" accept="image/*" onchange="previewPhoto()"/>
+    <div id="photoDisplay"></div>
+    <div class="buttons">
+      <button onclick="flipPage(-1)">← Back</button>
+      <button onclick="flipPage(1)">Next →</button>
     </div>
+  </div>
 
-    <div id="controls">
-      <button onclick="prevPage()" id="prevBtn" disabled>← Previous</button>
-      <button onclick="nextPage()" id="nextBtn">Next →</button>
+  <!-- Page 3 -->
+  <div class="page page3" id="page3">
+    <h1>❤️ My Lucky Charm ❤️</h1>
+    <p>
+      Thank you soooo much, my lucky charm, for coming into my life. Your love is my light, my strength, my everything.
+    </p>
+    <p style="font-size: 24px; color: #c72c48; margin-top: 30px;">
+      I love you soooo much ❤️🔥 <br/>
+      Forever yours 💋
+    </p>
+    <div class="buttons">
+      <button onclick="flipPage(-1)">← Back</button>
     </div>
   </div>
 </div>
 
 <script>
   const PASSWORD = "aastha";
-  const memoriesPerPage = 4; // two pages, each page shows 2 memories
-  let memories = [];
-  let currentPageIndex = 0;
+  let currentPage = 1;
 
-  // The special first meeting memory always first
-  const firstMeeting = {
-    who: "her",
-    content: "I remember your smile the first time I met you in September 2024. Everything felt magical and new.",
-    timestamp: "September 2024",
-  };
-
-  function unlockBook() {
+  function checkPassword() {
     const input = document.getElementById("passwordInput").value;
-    const wrongMsg = document.getElementById("wrongPassword");
-    if(input === PASSWORD) {
-      document.getElementById("passwordSection").style.display = "none";
+    if (input === PASSWORD) {
+      document.getElementById("lockScreen").style.display = "none";
       document.getElementById("book").style.display = "block";
-      wrongMsg.style.display = "none";
-
-      loadMemories();
-      currentPageIndex = 0;
-      showPage(currentPageIndex);
     } else {
-      wrongMsg.style.display = "block";
+      document.getElementById("wrong").style.display = "block";
     }
   }
 
-  function loadMemories() {
-    // Load memories from localStorage or start fresh with firstMeeting
-    memories = JSON.parse(localStorage.getItem("memoryBookMemories")) || [];
-    if(!memories.length){
-      memories = [firstMeeting];
-      localStorage.setItem("memoryBookMemories", JSON.stringify(memories));
+  function flipPage(direction) {
+    const book = document.getElementById("book");
+    const page1 = document.getElementById("page1");
+    const page2 = document.getElementById("page2");
+    const page3 = document.getElementById("page3");
+
+    if (direction === 1 && currentPage === 1) {
+      page1.classList.add("flipped");
     }
-  }
-
-  function saveMemories() {
-    localStorage.setItem("memoryBookMemories", JSON.stringify(memories));
-  }
-
-  function addMemory() {
-    const author = document.getElementById("authorSelect").value;
-    const text = document.getElementById("entryText").value.trim();
-    if(text === "") {
-      alert("Please write a memory before adding!");
-      return;
+    if (direction === 1 && currentPage === 2) {
+      page2.classList.add("flipped");
     }
-    const newMemory = {
-      who: author,
-      content: text,
-      timestamp: new Date().toLocaleString(),
-    };
-    memories.unshift(newMemory);
-    saveMemories();
-    document.getElementById("entryText").value = "";
-    currentPageIndex = 0;
-    showPage(currentPageIndex);
-  }
-
-  function showPage(pageIndex) {
-    const leftPage = document.getElementById("leftPage");
-    const rightPage = document.getElementById("rightPage");
-    leftPage.innerHTML = "";
-    rightPage.innerHTML = "";
-
-    // Calculate start index for this spread (2 memories per page side, total 4 memories per spread)
-    let startIndex = pageIndex * memoriesPerPage;
-
-    function createMemoryElement(memory) {
-      const div = document.createElement("div");
-      div.className = "entry " + (memory.who === "me" ? "me" : "her");
-      div.innerHTML = `
-        <p>${memory.content}</p>
-        <div class="timestamp">${memory.timestamp}</div>
-      `;
-      return div;
+    if (direction === -1 && currentPage === 3) {
+      page2.classList.remove("flipped");
+    }
+    if (direction === -1 && currentPage === 2) {
+      page1.classList.remove("flipped");
     }
 
-    // Left page shows memories at startIndex and startIndex + 1
-    if(memories[startIndex]) leftPage.appendChild(createMemoryElement(memories[startIndex]));
-    if(memories[startIndex + 1]) leftPage.appendChild(createMemoryElement(memories[startIndex + 1]));
-
-    // Right page shows memories at startIndex + 2 and startIndex + 3
-    if(memories[startIndex + 2]) rightPage.appendChild(createMemoryElement(memories[startIndex + 2]));
-    if(memories[startIndex + 3]) rightPage.appendChild(createMemoryElement(memories[startIndex + 3]));
-
-    // Update button states
-    document.getElementById("prevBtn").disabled = pageIndex <= 0;
-    document.getElementById("nextBtn").disabled = (startIndex + memoriesPerPage) >= memories.length;
+    currentPage += direction;
   }
 
-  function nextPage() {
-    if ((currentPageIndex + 1) * memoriesPerPage < memories.length) {
-      currentPageIndex++;
-      showPage(currentPageIndex);
-    }
-  }
-
-  function prevPage() {
-    if (currentPageIndex > 0) {
-      currentPageIndex--;
-      showPage(currentPageIndex);
+  function previewPhoto() {
+    const input = document.getElementById("photoInput");
+    const display = document.getElementById("photoDisplay");
+    display.innerHTML = '';
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        display.appendChild(img);
+      }
+      reader.readAsDataURL(input.files[0]);
     }
   }
 </script>
